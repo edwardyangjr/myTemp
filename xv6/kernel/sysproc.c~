@@ -11,24 +11,24 @@
 extern const int total_tickets;
 
 int
-sys_settickets(int ticCC)
+sys_settickets(void)
 {
-	int ticC = ticCC;
+	int ticC;
   //ticC = 0
 	if(argint(0, &ticC) < 0)
 		return -1;
 
 	acquire(&ptable.lock);
-	setTic(proc, ticC);
+	setproctickets(proc, ticC);
 	release(&ptable.lock);
 	return 0;
 }
 
 int
-sys_getpinfo(struct pstat* wantt)
+sys_getpinfo(void)
 {
 	acquire(&ptable.lock);
-	struct pstat* want = wantt;
+	struct pstat* want;
   // dont have want
 	if(argint(0, (int*)(&want)) < 0) {
 		return -1;
@@ -43,8 +43,10 @@ sys_getpinfo(struct pstat* wantt)
 			want->ticks[porPlace] = por->timeC;
 			want->tickets[porPlace] = por->tic;
 			want->inuse[porPlace] = por->inuse;
+			want->state[porPlace] = por->state;
 		}
 	}
+	want->totTic = totTic;
 	release(&ptable.lock);
 	return 0;
 }

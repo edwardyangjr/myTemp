@@ -204,7 +204,7 @@ exit(void)
         wakeup1(initproc);
     }
   }
-
+  
   setTic(proc, 0);
   // Jump into the scheduler, never to return.
   proc->state = ZOMBIE;
@@ -273,7 +273,7 @@ scheduler(void)
   setTic(ptable.proc, 1);
   release(&ptable.lock);
   int hSeed = 0;
-  int seed = 654321;
+  int seed = 12345;
   if(hSeed == 0) {
      srand(seed);
      hSeed = 1;
@@ -409,8 +409,8 @@ wakeup1(void *chan)
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     if(p->state == SLEEPING && p->chan == chan) {
-			totTic += p->tic;
-			p->state = RUNNABLE;
+      p->state = RUNNABLE;
+      totTic += p->tic;
     }
 }
 
@@ -437,8 +437,8 @@ kill(int pid)
       p->killed = 1;
       // Wake process from sleep if necessary.
       if(p->state == SLEEPING) {
-				totTic += p->tic;
-				p->state = RUNNABLE;
+        p->state = RUNNABLE;
+        totTic += p->tic;
       }
       release(&ptable.lock);
       return 0;
